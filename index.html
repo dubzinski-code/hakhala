@@ -225,6 +225,14 @@
     </div>
 
   </div>
+
+  <div id="loading-bar" style="
+    text-align:center; padding:16px; font-size:.9rem;
+    color:#2d5a52; background:rgba(42,157,143,.08);
+    border-radius:12px; margin-top:24px;
+  ">⏳ טוען מסמכים מ-Google Sheet...</div>
+
+  <div id="loading-bar" style="text-align:center;padding:16px;font-size:.9rem;color:#2d5a52;background:rgba(42,157,143,.08);border-radius:12px;margin-top:24px;">⏳ טוען מסמכים מ-Google Sheet...</div>
 </main>
 
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
@@ -244,107 +252,89 @@
 </div>
 
 <script>
-const DOCS = [
-  // ═══ פדגוגיה ═══
-  {title:'עיצוב אוניברסלי בעת למידה מרחוק',url:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/UDL_IGERET.pdf',urlAr:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/udl_aravit_igeret.pdf',topic:'pedagogy',subtopic:'עיצוב אוניברסלי',type:'PDF'},
-  {title:'הוראה מפורשת — עיקרון הבהירות',url:'https://docs.google.com/document/d/16aR-IsXbPiQtQqGDeUNGoQRmWXauwFYw/edit',topic:'pedagogy',subtopic:'עיצוב אוניברסלי',type:'DOCX'},
-  {title:'הוראה מפורשת לתלמידים עם צרכים שונים',url:'https://docs.google.com/document/d/1GrwyVFB9HJyquXNTNU4dysmhtG5s5a0r/edit',topic:'pedagogy',subtopic:'עיצוב אוניברסלי',type:'DOCX'},
-  {title:'פדגוגיה תומכת חוסן',url:'https://drive.google.com/file/d/195sT5JjI9nebhWn2jQr7Ee6qP6Milde8/view',topic:'pedagogy',subtopic:'עיצוב אוניברסלי',type:'PDF'},
-  {title:'מרחב פיזיטלי',url:'https://drive.google.com/drive/folders/1OMq17yKsKtT8QyzN5BUc1md3TGIXiaTc',topic:'pedagogy',subtopic:'עיצוב אוניברסלי',type:'תיקייה'},
-  {title:'קידום פעלנות שיתופית',url:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/coagency_igeret.pdf',topic:'pedagogy',subtopic:'פעלנות שיתופית',type:'PDF'},
-  {title:'קידום השתתפות פעילה ויוזמת (איגרת אמ"כ)',url:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/agency_igeret.pdf',urlAr:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/agency_aravit_igeret.pdf',topic:'pedagogy',subtopic:'פעלנות',type:'PDF'},
-  {title:'קידום השתתפות פעילה ויוזמת (חרבות ברזל)',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/Agency.pdf',topic:'pedagogy',subtopic:'פעלנות',type:'PDF'},
-  {title:'הדרך ללמידה בקבוצות קטנות גם בעת חירום',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/group_learning.pdf',urlAr:'https://meyda.education.gov.il/files/Yesodi/arab/HEROM/ind/learning_group.pdf',topic:'pedagogy',subtopic:'קבוצות קטנות',type:'PDF'},
-  {title:'למידה בקבוצות קטנות',url:'https://drive.google.com/file/d/1znDWNaBE5xainShxWI4vcsEn-xbMIxGJ/view',urlAr:'https://drive.google.com/file/d/1tLWQDJ7dYCQJE0f--SYtaQmMwanRDLQ7/view',topic:'pedagogy',subtopic:'קבוצות קטנות',type:'PDF'},
-  {title:'דשבורד הוראה מותאמת פרט',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/hachala_merachok1.pdf',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'הוראה מותאמת פרט בלמידה מרחוק',url:'https://drive.google.com/file/d/1Z3-q5VU9sMRJ8T1eMKyhYG7mufK5X83z/view',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'מענים לימודיים לתלמידים מתקשים בקריאה',url:'https://drive.google.com/file/d/1bCeBpq2WeEovHaD0d8fetkIBlSMQzCre/view',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'הנגשת ההוראה בלמידה מקוונת במגוון מרחבי למידה',url:'https://drive.google.com/file/d/1BEiT4dysUicCbVdOnHk0AQBBvYz-dou4/view',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'מענים לתלמידים עם צרכים מיוחדים הלומדים בחינוך הרגיל',url:'https://drive.google.com/file/d/1qHjqibdqo4GLTd5g4iQ-jssLL94k6sBm/view',urlAr:'https://drive.google.com/file/d/1R01rFCerQXns_yM0qWj-LVhyAHKSfcw7/view',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'חומרי הוראה, טיפול וחוסן לתלמידים עם מוגבלויות',url:'https://drive.google.com/file/d/1ODn2_0vUWUZAX3SXL3g0zdW77KI0AJC1/view',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'יותר מריבועים',urlAr:'https://drive.google.com/file/d/1e_iYY6GWxZgHeFa_n09Gi3jQhIaHVbW_/view',topic:'pedagogy',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'מרחב חומרי למידה בעברית — חינוך לשוני',url:'https://view.genially.com/65b228e46684600014450bb1',topic:'pedagogy',subtopic:'חינוך לשוני',type:"ג'ניאלי"},
-  {title:'למידה דיגיטלית — אוריינות לשונית ביסודי',url:'https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/Digitallearninglinguistic.pdf',topic:'pedagogy',subtopic:'חינוך לשוני',type:'PDF'},
-  {title:'דגמי הוראה דיגיטליים',url:'https://pop.education.gov.il/teaching-tools/teaching-models/',topic:'pedagogy',subtopic:'ארגז כלים',type:'פורטל'},
-  {title:'מודלים ללמידה היברידית והתאמתם לשלבי הגיל',url:'https://docs.google.com/presentation/d/1zePQogqDt6d8tAJ9ZdwHEI025qRlYdiT/edit',topic:'pedagogy',subtopic:'ארגז כלים',type:'PPTX'},
-  {title:'כלי לתכנון ומשוב על שיעור בלמידה מרחוק',url:'https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/lessonplanningtool.pdf',topic:'pedagogy',subtopic:'ארגז כלים',type:'PDF'},
-  {title:'כלי לתכנון שיעור מיטבי בלמידה מרחוק',url:'https://view.genially.com/65b7662a4dce970014e3af84',topic:'pedagogy',subtopic:'ארגז כלים',type:"ג'ניאלי"},
-  {title:'הערכת שיעור מקוון',url:'https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/evaluateelearning.pdf',topic:'pedagogy',subtopic:'ארגז כלים',type:'PDF'},
-  {title:'משימות אוריינות מידע',url:'https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/Informationliteracytasks.pdf',topic:'pedagogy',subtopic:'ארגז כלים',type:'PDF'},
-  {title:'לנווט עם "עלמא" — עקרונות ודגשים ללמידה מרחוק',url:'https://one-lang.my.canva.site/almanivut',topic:'pedagogy',subtopic:'עקרונות ודגשים',type:'קאנבה'},
-  {title:'פעילות מרחוק בבית הספר היסודי',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/lemida_merahok.pdf',topic:'pedagogy',subtopic:'עקרונות ודגשים',type:'PDF'},
-  // ═══ חוסן ═══
-  {title:'יחסי קרבה ואכפתיות כבסיס להכלה',url:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/kirva_igeret.pdf',urlAr:'https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/kirva_aravit_igeret.pdf',topic:'resilience',subtopic:'יחסי קרבה ואכפתיות',type:'PDF'},
-  {title:'יחסי קרבה ואכפתיות (חרבות ברזל)',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/relationship&empathy.pdf',topic:'resilience',subtopic:'יחסי קרבה ואכפתיות',type:'PDF'},
-  {title:'דשבורד הוראה מותאמת פרט',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/hachala_merachok1.pdf',topic:'resilience',subtopic:'יחסי קרבה ואכפתיות',type:'PDF'},
-  {title:'פדגוגיה תומכת חוסן (חרבות ברזל)',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/Pedagogy_supports_resilience.pdf',topic:'resilience',subtopic:'רגשי חברתי התנהגותי',type:'PDF'},
-  {title:'קידום אוריינות וחוסן אישי בלמידה מרחוק',url:'https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving.pdf',urlAr:'https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving-ar.pdf',topic:'resilience',subtopic:'רגשי חברתי התנהגותי',type:'PDF'},
-  {title:'חומרי הוראה, טיפול וחוסן לתלמידים עם מוגבלויות',url:'https://drive.google.com/file/d/1ODn2_0vUWUZAX3SXL3g0zdW77KI0AJC1/view',topic:'resilience',subtopic:'רגשי חברתי התנהגותי',type:'PDF'},
-  {title:'פעילות מרחוק בבית הספר היסודי',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/lemida_merahok.pdf',topic:'resilience',subtopic:'רגשי חברתי התנהגותי',type:'PDF'},
-  {title:'הגישה הסלוטוגנית',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/the_salutogenic_approach.pdf',topic:'resilience',subtopic:'גישה סלוטוגנית',type:'PDF'},
-  {title:'פותחים מסכים — המלצות לתלמידים עם מצלמות במפגש מקוון',url:'https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Zivtey_Hinuch/Aklim_Kita_Mekuvan/Ptichat_Mazlemot.pdf',topic:'resilience',subtopic:'מענים רגשיים חברתיים',type:'PDF'},
-  {title:'מאגר שפ"י נט',url:'https://shefi.education.gov.il/life-skills/mamlachti-elementary/',topic:'resilience',subtopic:'מענים רגשיים חברתיים',type:'פורטל'},
-  {title:'מאגרי כ"ח שפ"ח',url:'https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Igrot_Yomiyot/Gluyat_Magarey_Koach_Yesodi.pdf',topic:'resilience',subtopic:'מענים רגשיים חברתיים',type:'PDF'},
-  {title:'אקלים כיתה בטוח ותומך במרחב המקוון',url:'https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Zivtey_Hinuch/Aklim_Kita_Mekuvan/Daf_Merkazi.pdf',topic:'resilience',subtopic:'מענים רגשיים חברתיים',type:'PDF'},
-  {title:'מפתח הלב — חרבות ברזל',url:'https://pop.education.gov.il/tchumey_daat/heart-key/elementary/pedagogy/iron-swords-war/',topic:'resilience',subtopic:'מענים רגשיים חברתיים',type:'פורטל'},
-  {title:'מחוברים גם בלמידה מרחוק — מפתח הלב',url:'https://meyda.education.gov.il/files/yesodi/Hevra/north/connected.pdf',topic:'resilience',subtopic:'מענים רגשיים חברתיים',type:'PDF'},
-  // ═══ אוכלוסיות ═══
-  {title:'אתגרים ומענים רגשיים בלמידה מרחוק — לקויות למידה והפרעות קשב',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/Emotional&social_challenges_distance_learning_disabilities&ADHD.pdf',urlAr:'https://meyda.education.gov.il/files/Yesodi/arab/HEROM/TH.pdf',topic:'populations',subtopic:'לקויות למידה',type:'PDF'},
-  {title:'מענים לימודיים לתלמידים מתקשים בקריאה',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/reading.pdf',topic:'populations',subtopic:'לקויות למידה',type:'PDF'},
-  {title:'כשלקות למידה והפרעת קשב פוגשים למידה מרחוק (שפ"י)',url:'https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Zivtey_Hinuch/Lakuyot_Lemida_Lemida_Mekuvenet_2023.pdf',topic:'populations',subtopic:'לקויות למידה',type:'PDF'},
-  {title:'כשלקות למידה והפרעת קשב פוגשים למידה מרחוק (Drive)',url:'https://drive.google.com/file/d/1Wufy_3gbXydL-BlgSIhjs8NCNUV8bUA9/view',topic:'populations',subtopic:'לקויות למידה',type:'PDF'},
-  {title:'רואים ומעריכים גם מרחוק — לקויות למידה וקשב (תיקייה)',url:'https://drive.google.com/drive/folders/1Z3eeRB2ehzhg2nkjn7HvUG17W77tSYqw',topic:'populations',subtopic:'לקויות למידה',type:'תיקייה'},
-  {title:'טיפים לעבודה עם תלמידים עם הפרעת למידה ו/או קשב בחירום',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/ADHD.pdf',urlAr:'https://meyda.education.gov.il/files/Yesodi/arab/HEROM/ind/ADHD.pdf',topic:'populations',subtopic:'הפרעות קשב',type:'PDF'},
-  {title:'רואים ומעריכים גם מרחוק (קובץ בודד)',url:'https://drive.google.com/file/d/1S4yBu0SOBt5MYOAsK0AKvyJn5lvW0jkh/view',topic:'populations',subtopic:'הפרעות קשב',type:'PDF'},
-  {title:'תלמידים מחוננים ומצטיינים בעת למידה מרחוק (איגרת)',url:'https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/shaluach_Beahava.pdf',topic:'populations',subtopic:'מחוננים ומצטיינים',type:'PDF'},
-  {title:'תלמידים מחוננים ומצטיינים בעת למידה מרחוק (Drive)',url:'https://drive.google.com/file/d/1mEN2FTDp9UXNFXGsMZ8owwpHmzSvIDd2/view',topic:'populations',subtopic:'מחוננים ומצטיינים',type:'PDF'},
-  {title:'מחוננים ומצטיינים בעת למידה מרחוק (Drive 2)',url:'https://drive.google.com/file/d/1agxLrlaYkF_UYmaNqRm7LHEh8r6SMieE/view',topic:'populations',subtopic:'מחוננים ומצטיינים',type:'PDF'},
-  {title:'מסרים ללמידה מרחוק — דגשים לחינוך המיוחד',url:'https://meyda.education.gov.il/files/Special/emergency/5-points.pdf',urlAr:'https://meyda.education.gov.il/files/Special/emergency/5-points-ar.pdf',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'כיצד נסייע לילדינו להתמודד עם מצב חירום',url:'https://meyda.education.gov.il/files/Special/emergency/am-kalavi-help-children.pdf',urlAr:'https://meyda.education.gov.il/files/Special/emergency/am-kalavi-help-children-ar.pdf',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'כיצד נסייע לילדינו להתמודד עם מצב חירום (Drive)',url:'https://drive.google.com/file/d/1WQmmvVevPw6gI_t7D5h9mT5lyubBR2zu/view',urlAr:'https://drive.google.com/file/d/1JVvsXPlS_XnFzuUCMtBlBSxu8Q9fCOTh/view',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'מסרים ללמידה מרחוק — חינוך מיוחד (Drive)',url:'https://drive.google.com/file/d/1QWjMzJ1me7VNVO6KCZ-LBw871ZTvS9B7/view',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'חומרי הוראה, טיפול וחוסן לתלמידים עם מוגבלויות',url:'https://drive.google.com/file/d/1ODn2_0vUWUZAX3SXL3g0zdW77KI0AJC1/view',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'חומרי למידה בחינוך לשוני לתלמידים בתפקוד בינוני-גבוה',url:'https://drive.google.com/file/d/1WCbkE-fwm7-KTbPDEYghhL3gfIcqr2Bw/view',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'קידום אוריינות וחוסן אישי בלמידה מרחוק',url:'https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving.pdf',urlAr:'https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving-ar.pdf',topic:'populations',subtopic:'תלמידים עם מוגבלויות',type:'PDF'},
-  {title:'הנגשת ההוראה בלמידה מקוונת במגוון מרחבי למידה',url:'https://meyda.education.gov.il/files/Special/pedagogy/courses/accessibility-learning.pdf',urlAr:'https://meyda.education.gov.il/files/Special/emergency/accessibility-learning-ar.pdf',topic:'populations',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  {title:'מענים לתלמידים עם צרכים מיוחדים הלומדים בחינוך הרגיל',url:'https://drive.google.com/file/d/1qHjqibdqo4GLTd5g4iQ-jssLL94k6sBm/view',urlAr:'https://drive.google.com/file/d/1R01rFCerQXns_yM0qWj-LVhyAHKSfcw7/view',topic:'populations',subtopic:'הוראה מותאמת פרט',type:'PDF'},
-  // ═══ פיתוח מקצועי (ריק — ימולא בעתיד) ═══
-  // ═══ מנהלים (ריק — ימולא בעתיד) ═══
-];
+const SHEET_ID   = '1JGb_lit5mJaHuXdqR-dckKh4xn0k8rJ877BkZ2ZX4H4';
+const SHEET_NAME = 'Sheet1';
 
-const TOPICS = {
-  pedagogy:{label:'היבטים פדגוגיים',subtitle:'עקרונות ומודלים להוראה מכילה',accent:'#2a9d8f',
-    subtopics:['הכול','עיצוב אוניברסלי','פעלנות שיתופית','פעלנות','קבוצות קטנות','הוראה מותאמת פרט','חינוך לשוני','ארגז כלים','עקרונות ודגשים']},
-  resilience:{label:'היבטים של חוסן',subtitle:'תמיכה רגשית, חברתית וסלוטוגנית',accent:'#e76f51',
-    subtopics:['הכול','יחסי קרבה ואכפתיות','רגשי חברתי התנהגותי','גישה סלוטוגנית','מענים רגשיים חברתיים']},
-  populations:{label:'אוכלוסיות ייחודיות',subtitle:'חומרים ייעודיים לצרכים מיוחדים',accent:'#4361ee',
-    subtopics:['הכול','תלמידים עם מוגבלויות','הפרעות קשב','לקויות למידה','מחוננים ומצטיינים','הוראה מותאמת פרט']},
-  professional:{label:'פיתוח מקצועי וליווי צוותי הוראה',subtitle:'כלים לפיתוח מקצועי וליווי צוות',accent:'#9b59b6',
-    subtopics:['הכול','פיתוח מקצועי','ליווי צוות','קהילות למידה','הדרכה']},
-  principals:{label:'דגשים למנהלי בתי-ספר',subtitle:'הנחיה ניהולית-פדגוגית למנהלים',accent:'#e67e22',
-    subtopics:['הכול','הנחיה למנהל','ניהול פדגוגי','אקלים בית ספר','תכנון שנתי']},
+const TOPIC_MAP = {
+  'היבטיים פדגוגים':   'pedagogy',
+  'היבטים פדגוגיים':   'pedagogy',
+  'היבטים של חוסן':    'resilience',
+  'אוכלוסיות ייחודיות':'populations',
+  'פיתוח מקצועי':      'professional',
+  'דגשים למנהלים':     'principals',
 };
 
-function typeIcon(t){
-  t=(t||''). toLowerCase();
-  if(t==='pdf') return '📄';
-  if(t==='docx') return '📝';
-  if(t==='pptx') return '📊';
-  if(t==='תיקייה') return '📁';
-  if(t==='פורטל'||t==='קישור לפורטל') return '🌐';
-  return '🔗';
+const TOPICS = {
+  pedagogy:    {label:'היבטים פדגוגיים',    subtitle:'עקרונות ומודלים להוראה מכילה',     accent:'#2a9d8f'},
+  resilience:  {label:'היבטים של חוסן',     subtitle:'תמיכה רגשית, חברתית וסלוטוגנית',   accent:'#e76f51'},
+  populations: {label:'אוכלוסיות ייחודיות', subtitle:'חומרים ייעודיים לצרכים מיוחדים',   accent:'#4361ee'},
+  professional:{label:'פיתוח מקצועי וליווי צוותי הוראה',subtitle:'כלים לפיתוח מקצועי', accent:'#9b59b6'},
+  principals:  {label:'דגשים למנהלי בתי-ספר',subtitle:'הנחיה ניהולית-פדגוגית למנהלים', accent:'#e67e22'},
+};
+
+let DOCS = [];
+let currentTopic = null;
+let activeFilter  = 'הכול';
+
+async function loadFromSheet() {
+  const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
+  try {
+    const res  = await fetch(url);
+    const text = await res.text();
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+    const rows = json.table.rows;
+    DOCS = [];
+    rows.forEach(row => {
+      const c = row.c;
+      if (!c || !c[0] || !c[0].v) return;
+      const title    = String(c[0].v).trim();
+      const urlHe    = String(c[1] && c[1].v ? c[1].v : '').trim().replace(/^chrome-extension:\/\/[^\/]+\//, '');
+      const urlAr    = String(c[2] && c[2].v ? c[2].v : '').trim();
+      const topicRaw = String(c[3] && c[3].v ? c[3].v : '').trim();
+      const subtopic = String(c[4] && c[4].v ? c[4].v : '').trim();
+      const type     = String(c[5] && c[5].v ? c[5].v : 'PDF').trim();
+      if (!title || !topicRaw) return;
+      topicRaw.split(',').map(t => t.trim()).forEach(tp => {
+        const key = TOPIC_MAP[tp];
+        if (!key) return;
+        DOCS.push({title, url: urlHe || null, urlAr: urlAr || null, topic: key, subtopic, type});
+      });
+    });
+    updateCounts();
+    const lb = document.getElementById('loading-bar');
+    if (lb) lb.style.display = 'none';
+  } catch(e) {
+    console.error('Sheet load failed:', e);
+    const lb = document.getElementById('loading-bar');
+    if (lb) { lb.textContent = '\u26a0\ufe0f לא ניתן לטעון. ודאי שה-Sheet ציבורי ורעננו את הדף.'; lb.style.background='#fff3cd'; lb.style.color='#856404'; }
+  }
 }
 
-function initCounts(){
-  ['pedagogy','resilience','populations','professional','principals'].forEach(k=>{
-    document.getElementById('count-'+k).textContent = DOCS.filter(d=>d.topic===k).length;
+function updateCounts() {
+  Object.keys(TOPICS).forEach(k => {
+    const el = document.getElementById('count-' + k);
+    if (el) el.textContent = DOCS.filter(d => d.topic === k).length;
   });
-  document.getElementById('total-docs').textContent = DOCS.length;
+  const total = document.getElementById('total-docs');
+  if (total) total.textContent = DOCS.length;
 }
 
-let currentTopic=null, activeFilter='הכול';
+function typeIcon(t) {
+  t = (t||'').toLowerCase();
+  if (t==='pdf')    return '\ud83d\udcc4';
+  if (t==='docx')   return '\ud83d\udcdd';
+  if (t==='pptx')   return '\ud83d\udcca';
+  if (t==='תיקייה') return '\ud83d\udcc1';
+  if (t==='פורטל')  return '\ud83c\udf10';
+  return '\ud83d\udd17';
+}
 
-function openModal(key){
+function getSubtopics(key) {
+  const found = [...new Set(DOCS.filter(d => d.topic===key).map(d => d.subtopic))].filter(Boolean);
+  return ['הכול', ...found];
+}
+
+function openModal(key) {
   currentTopic=key; activeFilter='הכול';
   const t=TOPICS[key];
   document.getElementById('modal-title').textContent=t.label;
@@ -355,71 +345,58 @@ function openModal(key){
   document.body.style.overflow='hidden';
 }
 
-function closeModal(){
+function closeModal() {
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow='';
 }
 
-function handleOverlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+function handleOverlayClick(e) { if(e.target===document.getElementById('overlay')) closeModal(); }
 
-function renderFilters(key){
-  const t=TOPICS[key];
-  const avail=new Set(DOCS.filter(d=>d.topic===key).map(d=>d.subtopic));
-  const subs=t.subtopics.filter(s=>s==='הכול'||avail.has(s));
+function renderFilters(key) {
+  const t=TOPICS[key], subs=getSubtopics(key);
   if(subs.length<=1){document.getElementById('filter-row').innerHTML='';return;}
   document.getElementById('filter-row').innerHTML=subs.map(s=>{
     const active=s==='הכול';
-    const st=active?`border-color:${t.accent};background:${t.accent};color:white`:'';
-    return `<button class="filter-btn${active?' active':''}" style="${st}" onclick="setFilter('${s}','${t.accent}')">${s}</button>`;
+    const st=active ? 'border-color:'+t.accent+';background:'+t.accent+';color:white' : '';
+    return '<button class="filter-btn'+(active?' active':'')+'" style="'+st+'" onclick="setFilter(this.textContent,\''+t.accent+'\')">'+ s +'</button>';
   }).join('');
 }
 
-function setFilter(f,accent){
+function setFilter(f,accent) {
   activeFilter=f;
   document.querySelectorAll('.filter-btn').forEach(b=>{
-    const on=b.textContent===f;
+    const on=b.textContent.trim()===f;
     b.classList.toggle('active',on);
-    b.style.cssText=on?`border-color:${accent};background:${accent};color:white`:'';
+    b.style.cssText=on?'border-color:'+accent+';background:'+accent+';color:white':'';
   });
   renderDocs(currentTopic,f);
 }
 
-function renderDocs(key,filter){
+function renderDocs(key,filter) {
   const accent=TOPICS[key].accent;
   let docs=DOCS.filter(d=>d.topic===key);
   if(filter!=='הכול') docs=docs.filter(d=>d.subtopic===filter);
   const container=document.getElementById('doc-list-container');
   if(!docs.length){
-    container.innerHTML=`<div class="empty-state"><div class="es-icon">📋</div><p>תחום זה יאוכלס בקרוב במסמכים רלוונטיים.</p></div>`;
+    container.innerHTML='<div class="empty-state"><div class="es-icon">\ud83d\udccb</div><p>תחום זה יאוכלס בקרוב.</p></div>';
     return;
   }
   const items=docs.map(doc=>{
     const mainUrl=doc.url||doc.urlAr||'#';
-    return `<div class="doc-item" onclick="window.open('${mainUrl}','_blank')">
-      <div class="doc-icon">${typeIcon(doc.type)}</div>
-      <div class="doc-info">
-        <div class="doc-title">${doc.title}</div>
-        <div class="doc-sub">${doc.subtopic}</div>
-      </div>
-      <div class="doc-badges">
-        <div class="lang-links">
-          ${doc.url?`<a class="lang-btn lang-he" href="${doc.url}" target="_blank" onclick="event.stopPropagation()">עברית</a>`:''}
-          ${doc.urlAr?`<a class="lang-btn lang-ar" href="${doc.urlAr}" target="_blank" onclick="event.stopPropagation()">ערבית</a>`:''}
-        </div>
-        ${doc.type?`<span class="badge badge-type">${doc.type}</span>`:''}
-      </div>
-      <span class="doc-link-icon">↗</span>
-    </div>`;
+    const heBtn=doc.url   ? '<a class="lang-btn lang-he" href="'+doc.url+'"   target="_blank" onclick="event.stopPropagation()">עברית</a>' : '';
+    const arBtn=doc.urlAr ? '<a class="lang-btn lang-ar" href="'+doc.urlAr+'" target="_blank" onclick="event.stopPropagation()">ערבית</a>' : '';
+    const typeB=doc.type  ? '<span class="badge badge-type">'+doc.type+'</span>' : '';
+    return '<div class="doc-item" onclick="window.open(\''+mainUrl+'\',\'_blank\')" onmouseenter="this.style.borderColor=\''+accent+'\'" onmouseleave="this.style.borderColor=\'transparent\'">'+
+      '<div class="doc-icon">'+typeIcon(doc.type)+'</div>'+
+      '<div class="doc-info"><div class="doc-title">'+doc.title+'</div><div class="doc-sub">'+doc.subtopic+'</div></div>'+
+      '<div class="doc-badges"><div class="lang-links">'+heBtn+arBtn+'</div>'+typeB+'</div>'+
+      '<span class="doc-link-icon">&#8599;</span></div>';
   }).join('');
-  container.innerHTML=`<div class="doc-list">${items}</div>`;
-  document.querySelectorAll('.doc-item').forEach(el=>{
-    el.addEventListener('mouseenter',()=>el.style.borderColor=accent);
-    el.addEventListener('mouseleave',()=>el.style.borderColor='transparent');
-  });
+  container.innerHTML='<div class="doc-list">'+items+'</div>';
 }
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-initCounts();
+loadFromSheet();
 </script>
 </body>
 </html>
