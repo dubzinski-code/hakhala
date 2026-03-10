@@ -142,7 +142,7 @@
       <div class="header-stats">
         <div class="stat"><span class="stat-num" id="total-docs">—</span><span class="stat-label">מסמכים</span></div>
         <div class="stat"><span class="stat-num">5</span><span class="stat-label">תחומים</span></div>
-        <div class="stat"><span class="stat-num">9 במרץ 2026</span><span class="stat-label">עדכון אחרון</span></div>
+        <div class="stat"><span class="stat-num">10 במרץ 2026</span><span class="stat-label">עדכון אחרון</span></div>
       </div>
     </div>
   </div>
@@ -252,89 +252,83 @@
 </div>
 
 <script>
-const SHEET_ID   = '1JGb_lit5mJaHuXdqR-dckKh4xn0k8rJ877BkZ2ZX4H4';
-const SHEET_NAME = 'Sheet1';
-
 const TOPIC_MAP = {
-  'היבטיים פדגוגים':   'pedagogy',
-  'היבטים פדגוגיים':   'pedagogy',
-  'היבטים של חוסן':    'resilience',
-  'אוכלוסיות ייחודיות':'populations',
-  'פיתוח מקצועי':      'professional',
-  'דגשים למנהלים':     'principals',
+  'היבטיים פדגוגים':'pedagogy','היבטים פדגוגיים':'pedagogy',
+  'היבטיים של ניהול':'principals','היבטים של ניהול':'principals',
+  'היבטים של חוסן':'resilience','אוכלוסיות ייחודיות':'populations',
+  'פיתוח מקצועי':'professional','דגשים למנהלים':'principals'
 };
-
 const TOPICS = {
-  pedagogy:    {label:'היבטים פדגוגיים',    subtitle:'עקרונות ומודלים להוראה מכילה',     accent:'#2a9d8f'},
-  resilience:  {label:'היבטים של חוסן',     subtitle:'תמיכה רגשית, חברתית וסלוטוגנית',   accent:'#e76f51'},
-  populations: {label:'אוכלוסיות ייחודיות', subtitle:'חומרים ייעודיים לצרכים מיוחדים',   accent:'#4361ee'},
-  professional:{label:'פיתוח מקצועי וליווי צוותי הוראה',subtitle:'כלים לפיתוח מקצועי', accent:'#9b59b6'},
-  principals:  {label:'דגשים למנהלי בתי-ספר',subtitle:'הנחיה ניהולית-פדגוגית למנהלים', accent:'#e67e22'},
+  pedagogy:    {label:'היבטים פדגוגיים',    subtitle:'עקרונות ומודלים להוראה מכילה',                  accent:'#2a9d8f'},
+  resilience:  {label:'היבטים של חוסן',     subtitle:'תמיכה רגשית, חברתית וסלוטוגנית',                accent:'#e76f51'},
+  populations: {label:'אוכלוסיות ייחודיות', subtitle:'חומרים ייעודיים לצרכים מיוחדים',                accent:'#4361ee'},
+  professional:{label:'פיתוח מקצועי וליווי צוותי הוראה',subtitle:'כלים לפיתוח מקצועי',              accent:'#9b59b6'},
+  principals:  {label:'דגשים למנהלי בתי-ספר',subtitle:'הנחיה ניהולית-פדגוגית למנהלים',              accent:'#e67e22'}
 };
 
-let DOCS = [];
-let currentTopic = null;
-let activeFilter  = 'הכול';
+// מסמכים סטטיים — JSON בטוח לחלוטין
+const SD=[{"t": "יחסי קרבה ואכפתיות כבסיס להכלה", "h": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/kirva_igeret.pdf", "a": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/kirva_aravit_igeret.pdf", "k": "resilience", "s": "יחסי קרבה ואכפתיות", "y": "PDF"}, {"t": "קידום פעלנות שיתופית", "h": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/coagency_igeret.pdf", "a": null, "k": "pedagogy", "s": "פעלנות", "y": "PDF"}, {"t": "אתגרים ומענים רגשיים וחברתיים בעת למידה מרחוק בקרב תלמידים עם בעיות למידה והפרעות קשב", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/Emotional&social_challenges_distance_learning_disabilities&ADHD.pdf", "a": "https://meyda.education.gov.il/files/Yesodi/arab/HEROM/TH.pdf", "k": "populations", "s": "לקויות למידה", "y": "PDF"}, {"t": "פדגוגיה תומכת חוסן", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/Pedagogy_supports_resilience.pdf", "a": null, "k": "resilience", "s": "רגשי חברתי התנהגותי", "y": "PDF"}, {"t": "יחסי קרבה ואכפתיות גרסה אחרת", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/relationship&empathy.pdf", "a": null, "k": "resilience", "s": "יחסי קרבה ואכפתיות", "y": "PDF"}, {"t": "הדרך ללמידה בקבוצות קטנות גם בעת חירום", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/group_learning.pdf", "a": "https://meyda.education.gov.il/files/Yesodi/arab/HEROM/ind/learning_group.pdf", "k": "pedagogy", "s": "קבוצות קטנות", "y": "PDF"}, {"t": "טיפים לעבודה עם תלמידים עם הפרעת למידה ואו קשב בשגרת חירום", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/ADHD.pdf", "a": "https://meyda.education.gov.il/files/Yesodi/arab/HEROM/ind/ADHD.pdf", "k": "populations", "s": "הפרעות קשב", "y": "PDF"}, {"t": "מענים לימודיים לתלמידים מתקשים בקריאה", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/reading.pdf", "a": null, "k": "populations", "s": "לקויות למידה", "y": "PDF"}, {"t": "דשבורד הוראה מותאמת פרט", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/hachala_merachok1.pdf", "a": null, "k": "pedagogy", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "דשבורד הוראה מותאמת פרט", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/hachala_merachok1.pdf", "a": null, "k": "populations", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "דשבורד הוראה מותאמת פרט", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/hachala_merachok1.pdf", "a": null, "k": "resilience", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "הגישה הסלוטוגנית", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/the_salutogenic_approach.pdf", "a": null, "k": "resilience", "s": "גישה סלוטוגנית", "y": "PDF"}, {"t": "מסרים ללמידה מרחוק דגשים לחינוך המיוחד", "h": "https://meyda.education.gov.il/files/Special/emergency/5-points.pdf", "a": "https://meyda.education.gov.il/files/Special/emergency/5-points-ar.pdf", "k": "populations", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "כיצד נסייע לילידינו להתמודד עם מצב חירום", "h": "https://meyda.education.gov.il/files/Special/emergency/am-kalavi-help-children.pdf", "a": "https://meyda.education.gov.il/files/Special/emergency/am-kalavi-help-children-ar.pdf", "k": "populations", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "הנגשת ההוראה בלמידה מקוונת במגוון מרחבי למידה", "h": "https://meyda.education.gov.il/files/Special/pedagogy/courses/accessibility-learning.pdf", "a": "https://meyda.education.gov.il/files/Special/emergency/accessibility-learning-ar.pdf", "k": "populations", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "קידום אוריינות וחוסן אישי בלמידה מרחוק", "h": "https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving.pdf", "a": "https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving-ar.pdf", "k": "populations", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "קידום אוריינות וחוסן אישי בלמידה מרחוק", "h": "https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving.pdf", "a": "https://meyda.education.gov.il/files/Special/emergency/emergency-litteracy-improving-ar.pdf", "k": "resilience", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "כשלקות למידה והפרעת קשב פוגשים למידה מרחוק", "h": "https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Zivtey_Hinuch/Lakuyot_Lemida_Lemida_Mekuvenet_2023.pdf", "a": null, "k": "populations", "s": "הפרעות קשב", "y": "PDF"}, {"t": "תלמידים מחוננים ומצטיינים בעת למידה מרחוק", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/shaluach_Beahava.pdf", "a": null, "k": "populations", "s": "מחוננים ומצטיינים", "y": "PDF"}, {"t": "עיצוב אוניברסלי בעת למידה מרחוק", "h": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/UDL_IGERET.pdf", "a": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/udl_aravit_igeret.pdf", "k": "pedagogy", "s": "עיצוב אוניברסלי", "y": "PDF"}, {"t": "קידום השתתפות פעילה ויוזמת", "h": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/agency_igeret.pdf", "a": "https://meyda.education.gov.il/files/yesodi/am_kelavy/documents/agency_aravit_igeret.pdf", "k": "pedagogy", "s": "פעלנות", "y": "PDF"}, {"t": "קידום השתתפות פעילה ויוזמת", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/Agency.pdf", "a": null, "k": "pedagogy", "s": "פעלנות", "y": "PDF"}, {"t": "דגמי הוראה דיגטליים", "h": "https://pop.education.gov.il/teaching-tools/teaching-models/", "a": null, "k": "pedagogy", "s": "עיצוב אוניברסלי", "y": "PDF"}, {"t": "פעילות מרחוק בביתהספר היסודי", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/lemida_merahok.pdf", "a": null, "k": "pedagogy", "s": "", "y": "PDF"}, {"t": "פעילות מרחוק בביתהספר היסודי", "h": "https://meyda.education.gov.il/files/yesodi/iron_swords/igeret/lemida_merahok.pdf", "a": null, "k": "resilience", "s": "", "y": "PDF"}, {"t": "רואים ומעריכים גם מרחוק את התלמידים עם לקויות הלמידה והקשב", "h": "https://drive.google.com/file/d/1S4yBu0SOBt5MYOAsK0AKvyJn5lvW0jkh/view", "a": null, "k": "populations", "s": "הפרעות קשב", "y": "PDF"}, {"t": "כלי לתכנון ומשוב על שיעור בלמידה מרחוק", "h": "https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/lessonplanningtool.pdf", "a": null, "k": "pedagogy", "s": "ארגז כלים", "y": "PDF"}, {"t": "מודלים ללמידה היברידית והתאמתם לשלבי הגיל ולתרחישים", "h": "https://docs.google.com/presentation/d/1zePQogqDt6d8tAJ9ZdwHEI025qRlYdiT/edit?slide=id.g29a895c33a3_3_0#slide=id.g29a895c33a3_3_0", "a": null, "k": "pedagogy", "s": "ארגז כלים", "y": "PPTX"}, {"t": "משימות אוריינות מידע", "h": "https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/Informationliteracytasks.pdf", "a": null, "k": "pedagogy", "s": "ארגז כלים", "y": "PDF"}, {"t": "דגמי הוראה דיגטליים", "h": "https://pop.education.gov.il/teaching-tools/teaching-models/", "a": null, "k": "pedagogy", "s": "ארגז כלים", "y": "קישור לפורטל"}, {"t": "כלי לתכנון שיעור מיטבי בלמידה מרחוק", "h": "https://view.genially.com/65b7662a4dce970014e3af84", "a": null, "k": "pedagogy", "s": "ארגז כלים", "y": "קישור לג'ניאלי"}, {"t": "הערכת שיעור מקוון", "h": "https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/evaluateelearning.pdf", "a": null, "k": "pedagogy", "s": "ארגז כלים", "y": "PDF"}, {"t": "פותחים מסכים - המלצות להתנהלות תלמידים עם מצלמות במהלך מפגש מקוון שפ\"י", "h": "https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Zivtey_Hinuch/Aklim_Kita_Mekuvan/Ptichat_Mazlemot.pdf", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "PDF"}, {"t": "מאגר שפ\"י נט", "h": "https://shefi.education.gov.il/life-skills/mamlachti-elementary/", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "קישור לפורטל"}, {"t": "מאגרי כ\"ח שפ\"ח", "h": "https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Igrot_Yomiyot/Gluyat_Magarey_Koach_Yesodi.pdf", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "PDF"}, {"t": "אקלים כיתה בטוח ותומך במרחב המקוון", "h": "https://meyda.education.gov.il/files/shefi/cherum/Haravot_Barzel/Zivtey_Hinuch/Aklim_Kita_Mekuvan/Daf_Merkazi.pdf", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "PDF"}, {"t": "מפתח הלב – חרבות ברזל", "h": "https://pop.education.gov.il/tchumey_daat/heart-key/elementary/pedagogy/iron-swords-war/", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "קישור לפורטל"}, {"t": "מחוברים גם בלמידה מרחוק – מפתח הלב", "h": "https://meyda.education.gov.il/files/yesodi/Hevra/north/connected.pdf", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "PDF"}, {"t": "מרחב חומרי למידה בעברית- חינוך לשוני", "h": "https://view.genially.com/65b228e46684600014450bb1", "a": null, "k": "pedagogy", "s": "חינוך לשוני", "y": "קישור לג'ניאלי"}, {"t": "למידה דיגיטלית אוריינות לשונית ביסודי", "h": "https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/Digitallearninglinguistic.pdf", "a": null, "k": "pedagogy", "s": "חינוך לשוני", "y": "PDF"}, {"t": "מחוברים גם מרחוק - איגרת מס' 11", "h": "https://meyda.education.gov.il/files/yesodi/Hevra/north/connected.pdf", "a": null, "k": "resilience", "s": "מענים רגשיים חברתיים", "y": "PDF"}, {"t": "לנווט עם \"עלמא\" - עקרונות ודגשים ללמידה מרחוק לבית הספר היסודי - איגרת מס' 12", "h": "https://one-lang.my.canva.site/almanivut", "a": null, "k": "pedagogy", "s": "עקרונות ודגשים", "y": "קישור לקאנבה"}, {"t": "רואים ומעריכים גם מרחוק את התלמידים עם לקויות הלמידה והקשב", "h": "https://drive.google.com/drive/folders/1Z3eeRB2ehzhg2nkjn7HvUG17W77tSYqw", "a": null, "k": "populations", "s": "לקויות למידה והפרעת קשב", "y": "PDF"}, {"t": "מסרים ללמידה מרחוק חינוך מיוחד", "h": "https://drive.google.com/file/d/1QWjMzJ1me7VNVO6KCZ-LBw871ZTvS9B7/view?usp=drive_link", "a": null, "k": "populations", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "תלמידים מחוננים ומצטיינים בעת למידה מרחוק", "h": "https://drive.google.com/file/d/1mEN2FTDp9UXNFXGsMZ8owwpHmzSvIDd2/view?usp=drive_link", "a": null, "k": "populations", "s": "מחוננים ומצטיינים", "y": "PDF"}, {"t": "כשלקות למידה והפרעת קשב פוגשים למידה מרחוק", "h": "https://drive.google.com/file/d/1Wufy_3gbXydL-BlgSIhjs8NCNUV8bUA9/view?usp=drive_link", "a": null, "k": "populations", "s": "לקויות למידה והפרעת קשב", "y": "PDF"}, {"t": "כיצד נסייע לילדינו להתמודד עם מצב חירום", "h": "https://drive.google.com/file/d/1WQmmvVevPw6gI_t7D5h9mT5lyubBR2zu/view?usp=drive_link", "a": "https://drive.google.com/file/d/1JVvsXPlS_XnFzuUCMtBlBSxu8Q9fCOTh/view?usp=drive_link", "k": "populations", "s": "תלמידים בחינוך המיוחד", "y": "PDF"}, {"t": "מחוננים ומצטיינים בעת למידה מרחוק", "h": "https://drive.google.com/file/d/1agxLrlaYkF_UYmaNqRm7LHEh8r6SMieE/view?usp=drive_link", "a": null, "k": "populations", "s": "מחוננים ומצטיינים", "y": "PDF"}, {"t": "חומרי הוראה, טיפול וחוסן לתלמידים עם מוגבלויות ברמות תפקוד שונות", "h": "https://drive.google.com/file/d/1ODn2_0vUWUZAX3SXL3g0zdW77KI0AJC1/view?usp=drive_link", "a": null, "k": "populations", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "חומרי הוראה, טיפול וחוסן לתלמידים עם מוגבלויות ברמות תפקוד שונות", "h": "https://drive.google.com/file/d/1ODn2_0vUWUZAX3SXL3g0zdW77KI0AJC1/view?usp=drive_link", "a": null, "k": "pedagogy", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "חומרי הוראה, טיפול וחוסן לתלמידים עם מוגבלויות ברמות תפקוד שונות", "h": "https://drive.google.com/file/d/1ODn2_0vUWUZAX3SXL3g0zdW77KI0AJC1/view?usp=drive_link", "a": null, "k": "resilience", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "חומרי למידה בחינוך לשוני לתלמידים בתפקוד בינוני-גבוה", "h": "https://drive.google.com/file/d/1WCbkE-fwm7-KTbPDEYghhL3gfIcqr2Bw/view?usp=drive_link", "a": null, "k": "populations", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "הנגשת ההוראה בלמידה מקוונת במגוון מרחבי למידה", "h": "https://drive.google.com/file/d/1BEiT4dysUicCbVdOnHk0AQBBvYz-dou4/view?usp=drive_link", "a": null, "k": "pedagogy", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "הנגשת ההוראה בלמידה מקוונת במגוון מרחבי למידה", "h": "https://drive.google.com/file/d/1BEiT4dysUicCbVdOnHk0AQBBvYz-dou4/view?usp=drive_link", "a": null, "k": "populations", "s": "תלמידים עם מוגבלויות וצרכים שונים", "y": "PDF"}, {"t": "הוראה מותאמת פרט בלמידה מרחוק", "h": "https://drive.google.com/file/d/1Z3-q5VU9sMRJ8T1eMKyhYG7mufK5X83z/view?usp=drive_link", "a": null, "k": "pedagogy", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "מרחב פיזיטלי", "h": "https://drive.google.com/drive/u/0/folders/1OMq17yKsKtT8QyzN5BUc1md3TGIXiaTc", "a": null, "k": "pedagogy", "s": "עיצוב אוניברסלי", "y": "PDF"}, {"t": "הוראה מפורשת עיקרון הבהירות", "h": "https://docs.google.com/document/d/16aR-IsXbPiQtQqGDeUNGoQRmWXauwFYw/edit?usp=drive_link&ouid=113972783167480493983&rtpof=true&sd=true", "a": null, "k": "pedagogy", "s": "עיצוב אוניברסלי", "y": "DOCX"}, {"t": "למידה בקבוצות קטנות", "h": "https://drive.google.com/file/d/1znDWNaBE5xainShxWI4vcsEn-xbMIxGJ/view?usp=drive_link", "a": "https://drive.google.com/file/d/1tLWQDJ7dYCQJE0f--SYtaQmMwanRDLQ7/view?usp=drive_link", "k": "pedagogy", "s": "קבוצות קטנות", "y": "PDF"}, {"t": "מענים לימודיים לתלמידים מתקשים בקריאה", "h": "https://drive.google.com/file/d/1bCeBpq2WeEovHaD0d8fetkIBlSMQzCre/view?usp=drive_link", "a": null, "k": "pedagogy", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "פדגוגיה תומכת חוסן", "h": "https://drive.google.com/file/d/195sT5JjI9nebhWn2jQr7Ee6qP6Milde8/view?usp=drive_link", "a": null, "k": "pedagogy", "s": "עיצוב אוניברסלי", "y": "PDF"}, {"t": "מענים לתלמידים עם צרכים מיוחדים הלומדים בחינוך הרגיל", "h": "https://drive.google.com/file/d/1qHjqibdqo4GLTd5g4iQ-jssLL94k6sBm/view?usp=drive_link", "a": "https://drive.google.com/file/d/1R01rFCerQXns_yM0qWj-LVhyAHKSfcw7/view?usp=drive_link", "k": "pedagogy", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "מענים לתלמידים עם צרכים מיוחדים הלומדים בחינוך הרגיל", "h": "https://drive.google.com/file/d/1qHjqibdqo4GLTd5g4iQ-jssLL94k6sBm/view?usp=drive_link", "a": "https://drive.google.com/file/d/1R01rFCerQXns_yM0qWj-LVhyAHKSfcw7/view?usp=drive_link", "k": "populations", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "יותר מריבועים", "h": null, "a": "https://drive.google.com/file/d/1e_iYY6GWxZgHeFa_n09Gi3jQhIaHVbW_/view?usp=drive_link", "k": "pedagogy", "s": "הוראה מותאמת פרט", "y": "PDF"}, {"t": "הוראה מפורשת לתלמידים עם צרכים שונים", "h": "https://docs.google.com/document/d/1GrwyVFB9HJyquXNTNU4dysmhtG5s5a0r/edit?usp=drive_link&ouid=113972783167480493983&rtpof=true&sd=true", "a": null, "k": "pedagogy", "s": "עיצוב אוניברסלי", "y": "DOCX"}, {"t": "הכוורת", "h": "https://www.canva.com/design/DAF644DsFPY/ntDF9-SEAoK5anAjXonddA/view?utm_content=DAF644DsFPY&utm_campaign=designshare&utm_medium=link&utm_source=editor", "a": null, "k": "professional", "s": "יחידות הוראה", "y": "קאנבה"}, {"t": "ערכה למנהלי בתי ספר – למידה מרחוק בשעת חירום", "h": "https://meyda.education.gov.il/files/Mazkirut_Pedagogit/inovation/lemidamerahok.pdf", "a": null, "k": "principals", "s": "סדירויות ושגרות", "y": "PDF"}];
 
+// DOCS = מערך עבודה, t=title, h=urlHe, a=urlAr, k=topic, s=subtopic, y=type
+let DOCS = SD.map(d=>({title:d.t, url:d.h, urlAr:d.a, topic:d.k, subtopic:d.s, type:d.y}));
+let currentTopic=null, activeFilter='הכול';
+
+// ניסיון טעינה מ-Sheet — רק מוסיף מסמכים חדשים
 async function loadFromSheet() {
-  const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
   try {
+    const url = 'https://docs.google.com/spreadsheets/d/1JGb_lit5mJaHuXdqR-dckKh4xn0k8rJ877BkZ2ZX4H4/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent('Sheet1');
     const res  = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    const rows = json.table.rows;
-    DOCS = [];
-    rows.forEach(row => {
-      const c = row.c;
-      if (!c || !c[0] || !c[0].v) return;
-      const title    = String(c[0].v).trim();
-      const urlHe    = String(c[1] && c[1].v ? c[1].v : '').trim().replace(/^chrome-extension:\/\/[^\/]+\//, '');
-      const urlAr    = String(c[2] && c[2].v ? c[2].v : '').trim();
-      const topicRaw = String(c[3] && c[3].v ? c[3].v : '').trim();
-      const subtopic = String(c[4] && c[4].v ? c[4].v : '').trim();
-      const type     = String(c[5] && c[5].v ? c[5].v : 'PDF').trim();
-      if (!title || !topicRaw) return;
-      topicRaw.split(',').map(t => t.trim()).forEach(tp => {
-        const key = TOPIC_MAP[tp];
-        if (!key) return;
-        DOCS.push({title, url: urlHe || null, urlAr: urlAr || null, topic: key, subtopic, type});
+    const knownTitles = new Set(DOCS.map(d=>d.title));
+    let added=0;
+    json.table.rows.forEach(row=>{
+      const c=row.c;
+      if (!c||!c[0]||!c[0].v) return;
+      const title=String(c[0].v).trim();
+      if (knownTitles.has(title)) return;
+      const urlHe  = String(c[1]&&c[1].v?c[1].v:'').trim().replace(/^chrome-extension:\/\/[^\/]+\//,'');
+      const urlAr  = String(c[2]&&c[2].v?c[2].v:'').trim();
+      const topicR = String(c[3]&&c[3].v?c[3].v:'').trim();
+      const sub    = String(c[4]&&c[4].v?c[4].v:'').split(',')[0].trim();
+      const type   = String(c[5]&&c[5].v?c[5].v:'PDF').trim();
+      topicR.split(',').forEach(tp=>{
+        const k=TOPIC_MAP[tp.trim()];
+        if(k){DOCS.push({title,url:urlHe||null,urlAr:urlAr||null,topic:k,subtopic:sub,type});added++;}
       });
     });
-    updateCounts();
-    const lb = document.getElementById('loading-bar');
-    if (lb) lb.style.display = 'none';
-  } catch(e) {
-    console.error('Sheet load failed:', e);
-    const lb = document.getElementById('loading-bar');
-    if (lb) { lb.textContent = '\u26a0\ufe0f לא ניתן לטעון. ודאי שה-Sheet ציבורי ורעננו את הדף.'; lb.style.background='#fff3cd'; lb.style.color='#856404'; }
+    if(added>0) updateCounts();
+  } catch(e){ /* Sheet לא נגיש — מסמכים סטטיים כבר טעונים */ }
+  finally {
+    const lb=document.getElementById('loading-bar');
+    if(lb) lb.style.display='none';
   }
 }
 
-function updateCounts() {
-  Object.keys(TOPICS).forEach(k => {
-    const el = document.getElementById('count-' + k);
-    if (el) el.textContent = DOCS.filter(d => d.topic === k).length;
+function updateCounts(){
+  Object.keys(TOPICS).forEach(k=>{
+    const el=document.getElementById('count-'+k);
+    if(el) el.textContent=DOCS.filter(d=>d.topic===k).length;
   });
-  const total = document.getElementById('total-docs');
-  if (total) total.textContent = DOCS.length;
+  const tot=document.getElementById('total-docs');
+  if(tot) tot.textContent=DOCS.length;
 }
 
-function typeIcon(t) {
-  t = (t||'').toLowerCase();
-  if (t==='pdf')    return '\ud83d\udcc4';
-  if (t==='docx')   return '\ud83d\udcdd';
-  if (t==='pptx')   return '\ud83d\udcca';
-  if (t==='תיקייה') return '\ud83d\udcc1';
-  if (t==='פורטל')  return '\ud83c\udf10';
-  return '\ud83d\udd17';
+function typeIcon(t){
+  t=(t||'').toLowerCase();
+  if(t==='pdf') return '📄';
+  if(t==='docx') return '📝';
+  if(t==='pptx') return '📊';
+  if(t.includes('תיקייה')) return '📁';
+  if(t.includes('פורטל')) return '🌐';
+  return '🔗';
 }
 
-function getSubtopics(key) {
-  const found = [...new Set(DOCS.filter(d => d.topic===key).map(d => d.subtopic))].filter(Boolean);
-  return ['הכול', ...found];
+function getSubtopics(k){
+  return ['הכול',...new Set(DOCS.filter(d=>d.topic===k).map(d=>d.subtopic).filter(Boolean))];
 }
 
-function openModal(key) {
+function openModal(key){
   currentTopic=key; activeFilter='הכול';
   const t=TOPICS[key];
   document.getElementById('modal-title').textContent=t.label;
@@ -344,25 +338,22 @@ function openModal(key) {
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-
-function closeModal() {
+function closeModal(){
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow='';
 }
+function handleOverlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
 
-function handleOverlayClick(e) { if(e.target===document.getElementById('overlay')) closeModal(); }
-
-function renderFilters(key) {
+function renderFilters(key){
   const t=TOPICS[key], subs=getSubtopics(key);
   if(subs.length<=1){document.getElementById('filter-row').innerHTML='';return;}
   document.getElementById('filter-row').innerHTML=subs.map(s=>{
-    const active=s==='הכול';
-    const st=active ? 'border-color:'+t.accent+';background:'+t.accent+';color:white' : '';
-    return '<button class="filter-btn'+(active?' active':'')+'" style="'+st+'" onclick="setFilter(this.textContent,\''+t.accent+'\')">'+ s +'</button>';
+    const on=s==='הכול';
+    const st=on?'border-color:'+t.accent+';background:'+t.accent+';color:white':'';
+    return '<button class="filter-btn'+(on?' active':'')+'" style="'+st+'" onclick="setFilter(this.textContent.trim(),\''+t.accent+'\')">'+ s +'</button>';
   }).join('');
 }
-
-function setFilter(f,accent) {
+function setFilter(f,accent){
   activeFilter=f;
   document.querySelectorAll('.filter-btn').forEach(b=>{
     const on=b.textContent.trim()===f;
@@ -371,31 +362,28 @@ function setFilter(f,accent) {
   });
   renderDocs(currentTopic,f);
 }
-
-function renderDocs(key,filter) {
+function renderDocs(key,filter){
   const accent=TOPICS[key].accent;
   let docs=DOCS.filter(d=>d.topic===key);
   if(filter!=='הכול') docs=docs.filter(d=>d.subtopic===filter);
-  const container=document.getElementById('doc-list-container');
-  if(!docs.length){
-    container.innerHTML='<div class="empty-state"><div class="es-icon">\ud83d\udccb</div><p>תחום זה יאוכלס בקרוב.</p></div>';
-    return;
-  }
-  const items=docs.map(doc=>{
-    const mainUrl=doc.url||doc.urlAr||'#';
-    const heBtn=doc.url   ? '<a class="lang-btn lang-he" href="'+doc.url+'"   target="_blank" onclick="event.stopPropagation()">עברית</a>' : '';
-    const arBtn=doc.urlAr ? '<a class="lang-btn lang-ar" href="'+doc.urlAr+'" target="_blank" onclick="event.stopPropagation()">ערבית</a>' : '';
-    const typeB=doc.type  ? '<span class="badge badge-type">'+doc.type+'</span>' : '';
-    return '<div class="doc-item" onclick="window.open(\''+mainUrl+'\',\'_blank\')" onmouseenter="this.style.borderColor=\''+accent+'\'" onmouseleave="this.style.borderColor=\'transparent\'">'+
-      '<div class="doc-icon">'+typeIcon(doc.type)+'</div>'+
-      '<div class="doc-info"><div class="doc-title">'+doc.title+'</div><div class="doc-sub">'+doc.subtopic+'</div></div>'+
-      '<div class="doc-badges"><div class="lang-links">'+heBtn+arBtn+'</div>'+typeB+'</div>'+
+  const el=document.getElementById('doc-list-container');
+  if(!docs.length){el.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><p>תחום זה יאוכלס בקרוב.</p></div>';return;}
+  el.innerHTML='<div class="doc-list">'+docs.map(d=>{
+    const mu=d.url||d.urlAr||'#';
+    const he=d.url?'<a class="lang-btn lang-he" href="'+d.url+'" target="_blank" onclick="event.stopPropagation()">עברית</a>':'';
+    const ar=d.urlAr?'<a class="lang-btn lang-ar" href="'+d.urlAr+'" target="_blank" onclick="event.stopPropagation()">ערבית</a>':'';
+    const ty=d.type?'<span class="badge badge-type">'+d.type+'</span>':'';
+    const su=encodeURIComponent(mu);
+    return '<div class="doc-item" onclick="window.open(decodeURIComponent(\''+su+'\'))" onmouseenter="this.style.borderColor=\''+accent+'\'" onmouseleave="this.style.borderColor=\'transparent\'">'+
+      '<div class="doc-icon">'+typeIcon(d.type)+'</div>'+
+      '<div class="doc-info"><div class="doc-title">'+d.title+'</div><div class="doc-sub">'+d.subtopic+'</div></div>'+
+      '<div class="doc-badges"><div class="lang-links">'+he+ar+'</div>'+ty+'</div>'+
       '<span class="doc-link-icon">&#8599;</span></div>';
-  }).join('');
-  container.innerHTML='<div class="doc-list">'+items+'</div>';
+  }).join('')+'</div>';
 }
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+updateCounts();
 loadFromSheet();
 </script>
 </body>
